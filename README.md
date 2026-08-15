@@ -2,7 +2,7 @@
 
 一个将聊天内容交给 DeepSeek，并生成可直接发送的候选回复的 iOS 快捷指令。
 
-[下载最新快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/%E7%81%B5%E5%8A%A8%E5%9B%9E%E5%A4%8D.shortcut)
+[下载最新快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/LingDongReply.shortcut)
 
 本项目参考了 [Avivbens/ios-shortcuts 的 AI Response](https://github.com/Avivbens/ios-shortcuts/tree/master/packages/ai-response) 的交互思路，但直接调用 DeepSeek API，不依赖 ChatGPT App，也不需要截图识别。
 
@@ -33,7 +33,7 @@
 当前最新版本为 **v0.2.0**，发布时间为 **2026-08-15**。
 
 - Release 页面：[v0.2.0](https://github.com/aaronfang/ai-response/releases/tag/v0.2.0)
-- 下载资产：`灵动回复.shortcut`
+- 下载资产：`LingDongReply.shortcut`（快捷指令名称仍为“灵动回复”）
 - 构建产物不包含真实 API Key
 
 ## 运行要求
@@ -47,7 +47,7 @@
 
 ### 从 Release 安装（推荐）
 
-1. 下载 [最新版本的快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/%E7%81%B5%E5%8A%A8%E5%9B%9E%E5%A4%8D.shortcut)；
+1. 下载 [最新版本的快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/LingDongReply.shortcut)；
 2. 在 iPhone 或 Mac 上打开文件并添加到“快捷指令”；
 3. 如果导入界面没有出现 API Key 配置项，打开快捷指令编辑页面；
 4. 找到最上方的空白“文本”动作，填写你的 DeepSeek API Key：
