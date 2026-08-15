@@ -2,7 +2,7 @@
 
 一个将聊天内容交给 DeepSeek，并生成可直接发送的候选回复的 iOS 快捷指令。
 
-[下载最新快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/DeepSeek%20%E5%BB%BA%E8%AE%AE%E5%9B%9E%E5%A4%8D.shortcut)
+[下载最新快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/DeepSeek.shortcut)
 
 本项目参考了 [Avivbens/ios-shortcuts 的 AI Response](https://github.com/Avivbens/ios-shortcuts/tree/master/packages/ai-response) 的交互思路，但直接调用 DeepSeek API，不依赖 ChatGPT App，也不需要截图识别。
 
@@ -41,7 +41,7 @@
 
 ### 从 Release 安装（推荐）
 
-1. 下载 [最新版本的快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/DeepSeek%20%E5%BB%BA%E8%AE%AE%E5%9B%9E%E5%A4%8D.shortcut)；
+1. 下载 [最新版本的快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/DeepSeek.shortcut)；
 2. 在 iPhone 或 Mac 上打开文件并添加到“快捷指令”；
 3. 如果导入界面没有出现 API Key 配置项，打开快捷指令编辑页面；
 4. 找到最上方的空白“文本”动作，填写你的 DeepSeek API Key：
