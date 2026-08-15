@@ -1,0 +1,5 @@
+dist/
+*.shortcut
+*.plist
+*.preprocessed.cherri
+.DS_Store
