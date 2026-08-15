@@ -1,15 +1,16 @@
-# DeepSeek 建议回复
+# 灵动回复
 
 一个将聊天内容交给 DeepSeek，并生成可直接发送的候选回复的 iOS 快捷指令。
 
-[下载最新快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/DeepSeek.shortcut)
+[下载最新快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/%E7%81%B5%E5%8A%A8%E5%9B%9E%E5%A4%8D.shortcut)
 
 本项目参考了 [Avivbens/ios-shortcuts 的 AI Response](https://github.com/Avivbens/ios-shortcuts/tree/master/packages/ai-response) 的交互思路，但直接调用 DeepSeek API，不依赖 ChatGPT App，也不需要截图识别。
 
 1. 在聊天应用中选中一段文字；
-2. 从系统共享菜单运行 **DeepSeek 建议回复**；
-3. DeepSeek 生成 5 条候选回复；
-4. 选择其中一条，快捷指令会复制回复并自动打开微信。
+2. 从系统共享菜单运行 **灵动回复**；
+3. 可选填写想回复的大致方向、态度或内容，也可以留空；
+4. DeepSeek 生成 9 条候选回复；
+5. 选择其中一条，快捷指令会将回复复制到剪贴板。
 
 选中文字比截图更快，也能减少无关内容上传。
 
@@ -18,21 +19,26 @@
 - 从共享菜单接收选中的聊天文字；
 - 未收到输入时自动读取剪贴板；
 - 仍无内容时允许手动粘贴；
-- 默认使用自然语气，避免每次运行都弹出语气选择；
+- 生成前可补充回复方向或大致内容，留空时仍按默认提示词生成；
+- 自动识别聊天内容的主要语言，并使用相同语言生成全部回复；
+- 每次生成三组不同风格、共 9 条候选回复；
+- 第 1～3 条偏向高情商、幽默和情绪价值；
+- 第 4～6 条偏向话少、高级幽默和绝不内耗；
+- 第 7～9 条偏向精明得体，适合长辈或领导场景；
 - 使用 DeepSeek JSON 输出生成结构化候选项；
-- 选择后直接复制，并自动打开微信，不请求通知权限。
+- 选择后直接复制到剪贴板，不自动打开其他 App，也不请求通知权限。
 
 ## 最新版本
 
-当前首个公开版本为 **v0.1.0**，发布时间为 **2026-08-15**。
+当前最新版本为 **v0.2.0**，发布时间为 **2026-08-15**。
 
-- Release 页面：[v0.1.0](https://github.com/aaronfang/ai-response/releases/tag/v0.1.0)
-- 下载资产：`DeepSeek 建议回复.shortcut`
+- Release 页面：[v0.2.0](https://github.com/aaronfang/ai-response/releases/tag/v0.2.0)
+- 下载资产：`灵动回复.shortcut`
 - 构建产物不包含真实 API Key
 
 ## 运行要求
 
-- iOS/iPadOS 17 或更高版本，建议使用较新的系统版本；
+- iOS/iPadOS 18 或更高版本；
 - 一个可用的 DeepSeek API Key；
 - 网络连接；
 - 构建源码时需要 macOS 和 [Cherri](https://github.com/electrikmilk/cherri)。
@@ -41,7 +47,7 @@
 
 ### 从 Release 安装（推荐）
 
-1. 下载 [最新版本的快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/DeepSeek.shortcut)；
+1. 下载 [最新版本的快捷指令](https://github.com/aaronfang/ai-response/releases/latest/download/%E7%81%B5%E5%8A%A8%E5%9B%9E%E5%A4%8D.shortcut)；
 2. 在 iPhone 或 Mac 上打开文件并添加到“快捷指令”；
 3. 如果导入界面没有出现 API Key 配置项，打开快捷指令编辑页面；
 4. 找到最上方的空白“文本”动作，填写你的 DeepSeek API Key：
@@ -72,7 +78,7 @@ brew install electrikmilk/cherri/cherri
 构建完成后，双击：
 
 ```text
-dist/DeepSeek 建议回复.shortcut
+dist/灵动回复.shortcut
 ```
 
 导入时，系统会询问 DeepSeek API Key。请直接填写：
@@ -83,7 +89,7 @@ sk-你的DeepSeek密钥
 
 填写后，可通过 iCloud 同步到 iPhone。
 
-如果你之前已经导入过旧版本，请先删除旧的 **DeepSeek 建议回复**，再导入新构建的文件。快捷指令的导入配置只会在首次添加时显示。
+如果你之前已经导入过旧版本，请先删除旧的 **DeepSeek 建议回复** 或 **灵动回复**，再导入新构建的文件。快捷指令的导入配置只会在首次添加时显示。
 
 > `shortcuts sign` 可能要求当前 Mac 已登录 iCloud，并启用快捷指令相关服务。
 
@@ -92,14 +98,13 @@ sk-你的DeepSeek密钥
 核心文件位于：
 
 ```text
-src/DeepSeek 建议回复.cherri
+src/灵动回复.cherri
 ```
 
 可以修改：
 
-- `SUGGESTION_COUNT`：默认 5；
+- `SUGGESTION_COUNT`：默认 9；
 - 系统提示词；
-- `TONE` 默认值；
 - `temperature` 和 `max_tokens`。
 
 修改后重新运行 `./scripts/build.sh`。
@@ -108,28 +113,23 @@ src/DeepSeek 建议回复.cherri
 
 ## iPhone 使用方式
 
-1. 打开微信；
+1. 打开目标聊天应用；
 2. 长按并选择对方的聊天内容；
 3. 点击 **共享**；
-4. 选择 **DeepSeek 建议回复**；
-5. 选择一条候选回复；
-6. 快捷指令会自动复制回复并打开微信；
-7. 在输入框中粘贴。
+4. 选择 **灵动回复**；
+5. 按需填写回复方向，或留空直接继续；
+6. 选择一条候选回复；
+7. 快捷指令会将回复复制到剪贴板；
+8. 回到聊天输入框粘贴。
 
-快捷指令现在默认使用“自然”语气，不再每次运行都弹出语气选择；生成完成后会自动打开微信。
+快捷指令会在生成前询问可选的回复方向，例如“不感兴趣”“委婉拒绝”“先感谢再确认时间”或一段大致内容。填写后，全部 9 条候选回复都会遵循这个内容立场，三组风格只改变表达方式；留空时则直接使用默认提示词生成。选择后只会复制回复，不会自动打开其他 App。
 
-快捷指令可以从共享菜单接收其他应用的文字，但生成完成后默认打开微信。如果你主要使用其他聊天应用，请修改源码最后的：
-
-```text
-openApp("com.tencent.xin")
-```
-
-将它替换成目标 App 的 Bundle Identifier，再重新构建。
+快捷指令可以从共享菜单接收不同应用中的文字。生成完成后不会强制跳转到某个 App，因此可以配合微信、Messages、WhatsApp 等不同聊天应用使用。
 
 如果共享菜单没有显示：
 
 1. 滑到共享菜单底部，点击“编辑操作”；
-2. 启用 **DeepSeek 建议回复**；
+2. 启用 **灵动回复**；
 3. 确认快捷指令详情中已开启“在共享表单中显示”。
 
 某些聊天应用不允许直接共享选中文字。这时可先复制文字，再直接运行快捷指令。
@@ -138,22 +138,22 @@ openApp("com.tencent.xin")
 
 1. 在聊天中复制消息；
 2. 将快捷指令添加到控制中心、轻点 iPhone 背面或操作按钮；
-3. 在微信中直接触发快捷指令；
+3. 在聊天应用中直接触发快捷指令；
 4. 快捷指令会自动读取剪贴板，不再要求再次粘贴聊天内容。
 
-生成完成后，快捷指令会自动打开微信并把回复放进剪贴板，所以推荐流程是：
+生成完成后，快捷指令会把回复放进剪贴板，不会自动打开其他 App。推荐流程是：
 
 ```text
-复制消息 → 从控制中心/背面轻点/操作按钮触发 → 选择回复 → 微信中粘贴
+复制消息 → 从控制中心/背面轻点/操作按钮触发 → 填写方向或留空 → 选择回复 → 返回聊天应用粘贴
 ```
 
 如果使用共享菜单，则是：
 
 ```text
-选中文字 → 共享 → DeepSeek 建议回复 → 选择回复 → 粘贴
+选中文字 → 共享 → 灵动回复 → 填写方向或留空 → 选择回复 → 粘贴
 ```
 
-快捷指令目前不能可靠地把文本直接注入微信当前输入框，因此最后仍需要一次粘贴。
+快捷指令目前不能可靠地把文本直接注入聊天应用的当前输入框，因此最后仍需要一次粘贴。
 
 ## DeepSeek API
 
@@ -227,7 +227,7 @@ completions
 ```text
 .
 ├── src/
-│   └── DeepSeek 建议回复.cherri
+│   └── 灵动回复.cherri
 ├── scripts/
 │   ├── build.sh
 │   └── check.sh

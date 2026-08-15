@@ -1,0 +1,182 @@
+#include 'actions/sharing'
+#include 'actions/text'
+#include 'actions/web'
+
+#define name 灵动回复
+#define color blue
+#define glyph brain
+#define version 18
+#define inputs text
+#define outputs text
+#define from sharesheet, quickactions
+#define quickactions services
+#define noinput getclipboard
+
+// 必须在其他动作之前使用导入问题，否则 Cherri 2.3.0 会生成错误的 ActionIndex，
+// 导致 iOS 导入快捷指令时不显示配置项。
+// 请不要把含真实密钥的编译产物公开提交。
+#question deepseek_api_key "请输入 DeepSeek API Key（以 sk- 开头）" "sk-请替换"
+
+// Cherri 会省略值为 0 的 ActionIndex，而 iOS 不会把缺少 ActionIndex 的配置识别为
+// 导入问题。增加一个无副作用动作，让 API Key 文本动作位于明确的索引 1。
+nothing()
+const apiKey = text(deepseek_api_key)
+
+const SUGGESTION_COUNT = 9
+
+@apiKeyText = trimWhitespace("{apiKey}")
+
+if !@apiKeyText || @apiKeyText contains "请替换" {
+    @apiKeyText = prompt("请输入 DeepSeek API Key（以 sk- 开头）", "Text")
+}
+
+if !@apiKeyText {
+    alert("没有收到 DeepSeek API Key。", "灵动回复")
+    stop()
+}
+
+if @apiKeyText beginsWith "sk-" {
+    nothing()
+} else {
+    alert("API Key 格式不正确。请填写 sk- 开头的 DeepSeek API Key，不要填写其他文字。", "灵动回复")
+    stop()
+}
+
+@chat = trimWhitespace("{ShortcutInput}")
+
+if !@chat {
+    const clipboard = getClipboard()
+    @chat = trimWhitespace("{clipboard}")
+}
+
+if !@chat {
+    @chat = prompt(
+        "请粘贴需要回复的聊天内容",
+        "Text"
+    )
+}
+
+if !@chat {
+    alert("没有收到聊天内容。请先选中文字并从共享菜单运行，或先复制聊天内容。", "灵动回复")
+    stop()
+}
+
+@replyDirection = prompt(
+    "可选：输入想表达的方向，例如“不感兴趣”“委婉拒绝”；留空则直接生成",
+    "Text"
+)
+@replyDirection = trimWhitespace("{replyDirection}")
+
+@directionContext = "未提供，请仅根据聊天内容和既定风格生成。"
+if @replyDirection {
+    @directionContext = "必须遵循：{@replyDirection}"
+}
+
+const systemPrompt = "你是一名多语言聊天回复助手。根据用户提供的聊天内容，生成 {SUGGESTION_COUNT} 条可直接发送的建议回复。
+
+本次回复方向：{@directionContext}
+若上方以“必须遵循”开头，它是本次所有候选回复共同的内容立场，优先于任何风格要求。
+
+要求：
+1. 只返回合法 json，不要使用 Markdown 代码块，不要添加解释。
+2. 用户提供的回复方向是最高优先级的内容约束。只要提供了方向，全部 9 条回复都必须在含义上遵循该方向；下述三组风格只能改变表达方式，不能改变用户的立场、意图或结论。
+3. 将简短方向理解为需要回复的一方本人想表达的态度。例如用户输入“不感兴趣”，九条都必须围绕不感兴趣表达拒绝，不得生成接受、期待或继续推进的回复；不得用聊天中没有出现的理由或借口替代用户方向。
+4. 未提供回复方向时，直接根据聊天内容和下述既定风格生成。
+5. 顶层 JSON 对象只能包含 suggestions 字段；该字段必须是恰好包含 9 个回复字符串的数组，并严格按下列顺序排列。
+6. 第 1～3 条：高情商、幽默，能给对方充分的情绪价值；三条表达方式要明显不同。幽默只能来自措辞，不得靠虚构安排、身份或事实。
+7. 第 4～6 条：话少、克制，带高级幽默感，态度松弛且绝不内耗；避免解释过多或讨好，不得用借口回避用户方向。
+8. 第 7～9 条：精明、得体、有分寸，尤其适合与长辈或领导交流，让人感到尊重、可靠且会办事；不要谄媚，也不要虚构对方称谓、自己的安排或后续承诺。
+9. 每条回复都要自然、口语化、符合上下文并可直接发送，九条之间不得只是同义改写。
+10. 根据聊天关系和场景灵活调整措辞，不要机械套用风格标签，也不要在回复中写出风格名称或序号。
+11. 输出语言只能由 <chat> 中聊天内容的主要语言决定，与用户填写回复方向时使用的语言无关。英文聊天必须生成 9 条自然英文回复，中文聊天必须生成 9 条自然中文回复；其他语言同理。如果回复方向与聊天内容语言不同，只翻译并执行其意图，不要跟随回复方向的语言。
+12. 不要编造聊天中没有出现的事实。
+13. 不要代替用户做重要承诺、转账、泄露隐私或发送敏感信息。
+14. 输出前逐条检查：如果用户提供了方向，任何没有明确表达该方向，或加入聊天和方向中都没有出现的理由、借口、身份、安排的回复都不合格，必须重写后再输出。"
+
+const userPrompt = "请站在需要回复的一方，给出可直接发送的候选回复。
+
+聊天内容：
+<chat>
+{@chat}
+</chat>
+
+用户要求的回复方向或内容（若已提供，所有候选回复都必须遵循）：
+<reply_direction>
+{@directionContext}
+</reply_direction>"
+
+const response = jsonRequest(
+    "https://api.deepseek.com/chat/completions",
+    "POST",
+    {
+        "model": "deepseek-v4-flash",
+        "messages": [
+            {
+                "role": "system",
+                "content": "{systemPrompt}"
+            },
+            {
+                "role": "user",
+                "content": "{userPrompt}"
+            }
+        ],
+        "response_format": {
+            "type": "json_object"
+        },
+        "thinking": {
+            "type": "disabled"
+        },
+        "temperature": 0.6,
+        "max_tokens": 1800,
+        "stream": false
+    },
+    {
+        "Authorization": "Bearer {@apiKeyText}",
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+)
+
+const responseType = typeOf(response)
+const responseDictionary = getDictionary(response)
+const responseKeys = getKeys(responseDictionary)
+const responseDebug = "{response}"
+const choices = getValue(responseDictionary, "choices")
+
+if !choices {
+    const apiErrorRaw = getValue(responseDictionary, "error")
+    if apiErrorRaw {
+        const apiError = getDictionary(apiErrorRaw)
+        const apiErrorMessage = getValue(apiError, "message")
+        alert("DeepSeek API 请求失败：{apiErrorMessage}", "灵动回复")
+    } else {
+        alert(
+            "DeepSeek 没有返回标准 JSON 响应。\n\nShortcuts 响应类型：{responseType}\nShortcuts 响应字段：{responseKeys}\nShortcuts 读取到的响应文本：\n{responseDebug}",
+            "灵动回复"
+        )
+    }
+    stop()
+}
+
+const firstChoiceRaw = getFirstItem(choices)
+const firstChoice = getDictionary(firstChoiceRaw)
+const messageRaw = getValue(firstChoice, "message")
+const message = getDictionary(messageRaw)
+const content = getValue(message, "content")
+const contentText = getText(content)
+const result = getDictionary(contentText)
+const suggestions = getValue(result, "suggestions")
+
+if !suggestions {
+    alert("无法解析 DeepSeek 返回的 JSON。\n\n模型 content：\n{contentText}", "灵动回复")
+    stop()
+}
+
+@selectedReply = chooseFromList(
+    suggestions,
+    "选择一条回复（会复制到剪贴板）"
+)
+
+if @selectedReply {
+    setClipboard(@selectedReply)
+}

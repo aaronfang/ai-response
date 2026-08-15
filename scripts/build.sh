@@ -3,11 +3,11 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-SOURCE_FILE="$ROOT_DIR/src/DeepSeek 建议回复.cherri"
+SOURCE_FILE="$ROOT_DIR/src/灵动回复.cherri"
 BUILD_DIR="$ROOT_DIR/dist"
-CHERRI_UNSIGNED_FILE="$ROOT_DIR/src/DeepSeek 建议回复_unsigned.shortcut"
-UNSIGNED_FILE="$BUILD_DIR/DeepSeek 建议回复.unsigned.shortcut"
-SIGNED_FILE="$BUILD_DIR/DeepSeek 建议回复.shortcut"
+CHERRI_UNSIGNED_FILE="$ROOT_DIR/src/灵动回复_unsigned.shortcut"
+UNSIGNED_FILE="$BUILD_DIR/灵动回复.unsigned.shortcut"
+SIGNED_FILE="$BUILD_DIR/灵动回复.shortcut"
 
 if ! command -v cherri >/dev/null 2>&1; then
     echo "未找到 Cherri。请先运行："
